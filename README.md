@@ -1,5 +1,5 @@
 # Syracuse University, Milestone Portfolio Project
-## Caitlin Rookey
+## Caitlin Rookey, M.L.S
 Portfolio Milestone for Master of Science in Applied Data Science at Syracuse University
 ## Description 
 
