@@ -1,17 +1,17 @@
-IST 707: Applied Machine Learning
-Caitlin Rookey
-ID #
+# IST 707: Applied Machine Learning
+## Caitlin Rookey
+## ID #
 
 crookey@syr.edu
 caitlinrookey@gmail.com
 
-Description
+# Description
 
 Project description...
 
 * R Studio
 
-Table of Contents
+# Table of Contents
 
 1. README.md 
     - Overview Document detailing repository contents
