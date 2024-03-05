@@ -1,0 +1,831 @@
+---
+title: "Logrono_Rookey_Final"
+output:
+  word_document: default
+  html_document: default
+date: "2023-03-10"
+---
+#Injury Prediction for Competitive Runners
+
+
+
+##Introduction
+
+The most common injuries faced by runners are overuse injuries. These injuries develop over time due to issues like ramping up mileage too quickly, improper running form, not giving one’s body adequate time to recover, having tight or weak muscles, and wearing improper footwear. According to an article in houstonmethodist.org, some ways to prevent overuse injuries are to have a plan and progress slowly, avoid the increase of speed and distance simultaneously, give muscles time to recover, and make time for cross-training.1 How does one track the distance one runs daily, how much time one spends on a workout routine, or even how fast one runs? Fortunately, thanks to technological advances, some gadgets can track all the above and more, including how much sleep a person gets overnight. 
+
+The invention of the pedometer dates back to the 1770’s when a Swiss horologist by the name of Abraham-Louis Perrelet created it.  Arguably, it’s also been suggested that it was Thomas Jefferson who produced the first mechanical fitness tracker. While it is unclear as to who came up with the idea, it is obvious that the technology for the pedometer progressed over the centuries.  In 1921, the polygraph was invented as the first machine to have sensors measuring galvanic skin responses, pulse rate and blood pressure.  With these physiological indicators, the machine detected if a person was lying.  These machines were mainly used by police.  
+
+In 1965, the first modern pedometer fitness tracker was invented by Dr.Yoshiro Hatano, a Japanese professor at the Kyushu University of Health and Welfare.  The Manpo-kei, or as translated in English “the 10,000-step meter”, was developed to combat obesity.  Dr. Hatano speculated that with 10,000 steps, a proper balance of caloric intake and exercise to expend calories, one can maintain a healthy body.  This pedometer was a simple gadget that was worn around the waste and had the ability to calculate the number of steps the individual walked. The Manpo-kei sold quickly as people started tracking their number of steps each day.1 
+
+From there, the pedometer’s technology evolved.  In the 1970’s, Accelerometers were developed with the ability to detect a moving object’s motion and were used in the development of guided missile technologies.   They were also used in vehicles to detect sharp deceleration and deploy airbags in crashes to help minimize injuries to drivers and passengers.  In 1982, the Polar Sports Tester PE2000 came into the market essentially as a combination of an electrocardiogram and a radio chest strap to track athletic activities. A few years later, the PE3000 was released as the first watch with the capabilities of displaying biometric information live on its display. Then in 1987, the PE3000 was upgraded to introduce Target zones for the athletes’ heart rate-based training.1  
+
+In 1996, GPS Tracking became available for civilian usage (before only available for military use) and were used in fitness trackers to give a person access to mapping of their exercise routine.  In 2006, the Nokia developed their motion sensing device (Nokia 5500 Sport) that had a built-in accelerometer with the ability to detect three different planes of motion; front to back, up and down, and side-to-side.  In 2008-2009, Fitbit came into the market with their clip on motion detector to track the wearer’s movements, sleep, and calorie burn. From there, Fitbit introduced a wide-spread of activity tracking devices with the capability of connecting to smartphones with features such as Swim proof and swim tracking, reminders to move, and SmartTrack Automatic Exercise Recognition.
+
+However, with all the advancements in technology for tracking devices, overuse injuries still exist. Is tracking one’s daily routine with one of these gadgets enough? Does sentiment also play a critical role in preventing overuse injury? 
+
+
+
+
+
+# Analysis and Models
+
+# About the Data
+
+This dataset was downloaded from https://www.kaggle.com/datasets/shashwatwork/injury-prediction-for-competitive-runners 
+
+For this analysis, we are using the daily approach as this approach gave more accurate results in the original experiment. The dimensions for this dataset: 42,766 records and 73 attributes All attributes are numeric except for Athlete ID, injury, and date. Data format: Each day consists of 10 attributes: Number of sessions [0, 2]: training sessions athlete completed that day. Total km [0, 25]: total distance ran by athlete. Km.Z3.4[0, 15]: Sum of the distance ran by athlete in heart rate zones 3 and 4. Km.Z5.T1.T2[0, 10]: Sum of distance ran by athlete during anaerobic zone in high intensity track intervals. Km. sprinting [0, 1.5]: Total distance sprinting Strength training [0, 1]: 1 represents if athlete performed some strength training; 0 represents no strength training. Hours.alternative [0, 3]: Hours spent doing alternative training. Alternative training can be any cross-training such as cycling or swimming. Perceived.exertion [-0.01, 1]: This is a subjective attribute indicating how exhausted the athlete felt upon completion of the training. Perceived.trainingSuccess [-0.01, 1]: This is a subjective attribute indicating how well the athlete thought the training went. Perceived.recovery [-0.01, 1]: This is a subjective attribute indicating how well the athlete felt before the start of the session. Date: The date attribute is format by the day number within the 7-year period Athlete ID: The Athlete ID is not a unique value due to the format of the dataset, where each record is a day within the 7-year period, pertaining to each athlete. There is a total of 77 athletes, of whom 27 are women and 50 are men. Injury [0, 1]: This attribute indicates whether there was an injury event on this day, for this athlete (1), or whether there was no injury (0). 
+
+Before running models on the data, the following steps were performed: Identified variables that needed to be factorized Identified the number of injuries within the dataset vs. non-injuries Visualized all variables and distributions Created samples of the dataset to make up for the imbalance 
+
+##Load all necessary libraries
+```{r}
+
+library(tm)
+library(stringr)
+library(wordcloud)
+library(stringi)
+library(Matrix)
+library(tidytext)
+library(rpart)
+library(rpart.plot)
+library(RColorBrewer)
+library(readr)
+library(ggplot2)
+library(cluster)
+library(factoextra)
+library(dendextend)
+library(dplyr)
+library(arules)
+library(arulesViz)
+library(randomForest)
+library(randomForestExplainer)
+library(naivebayes)
+library(e1071)
+library(caret)
+library(class)
+library(lattice)
+library(party)
+library(tidyr)
+library(purrr)
+library(corrplot)
+library(knitr)
+library(tidyverse)
+library(gmodels)
+library(rattle)
+```
+
+# EDA
+
+# Load the data
+```{r}
+daily <- read.csv("C:/Users/benro/OneDrive/Documents/IST707/Final/day_approach_maskedID_timeseries.csv")
+
+```
+
+# Check the dimensions of our dataset. Results in 42,766 records, 73 attributes.
+```{r}
+dim(daily)
+```
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Checking  the structure of the data.  There are 42,766 observations with 73 attributes.
+```{r}
+str(daily)
+```
+
+Checking for missing values in the dataset. There are no missing values.
+```{r}
+sum(is.na(daily))
+```
+
+How many Total injuries events in the 7 years in the team? Binary variable with 0 represents not injured, 1 represents injured. This column should be converted into a factor in the cleaning process.  
+```{r}
+table(daily$injury)
+```
+Looking at summary of columns to see what should be factorized and/or discretized.
+
+```{r}
+summary(daily)
+```
+
+The variables for kilometer could be binned to reduce the number of records. We will divide them into percentiles below:
+
+```{r}
+#Total Km each day
+daily_linear<-daily
+#day 1
+Percentile_00 = min(daily_linear$total.km)
+Percentile_33 = quantile(daily_linear$total.km, 0.33333)
+Percentile_67 = quantile(daily_linear$total.km, 0.66667)
+Percentile_100 = max(daily_linear$total.km)
+
+Daily_bindA = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA)[[2]] = "Value"
+
+#day 2
+Percentile_00.1 = min(daily_linear$total.km.1)
+Percentile_33.1 = quantile(daily_linear$total.km.1, 0.33333)
+Percentile_67.1 = quantile(daily_linear$total.km.1, 0.66667)
+Percentile_100.1 = max(daily_linear$total.km.1)
+
+Daily_bindA1 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA1)[[2]] = "Value"
+
+#Day3
+Percentile_00.2 = min(daily_linear$total.km.2)
+Percentile_33.2 = quantile(daily_linear$total.km.2, 0.33333)
+Percentile_67.2 = quantile(daily_linear$total.km.2, 0.66667)
+Percentile_100.2 = max(daily_linear$total.km.2)
+
+Daily_bindA2 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA2)[[2]] = "Value"
+
+#day4
+Percentile_00.3 = min(daily_linear$total.km.3)
+Percentile_33.3 = quantile(daily_linear$total.km.3, 0.33333)
+Percentile_67.3 = quantile(daily_linear$total.km.3, 0.66667)
+Percentile_100.3 = max(daily_linear$total.km.3)
+
+Daily_bindA3 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA3)[[2]] = "Value"
+
+#day 5
+Percentile_00.4 = min(daily_linear$total.km.4)
+Percentile_33.4 = quantile(daily_linear$total.km.4, 0.33333)
+Percentile_67.4 = quantile(daily_linear$total.km.4, 0.66667)
+Percentile_100.4 = max(daily_linear$total.km.4)
+
+Daily_bindA4 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA4)[[2]] = "Value"
+
+#day 6
+Percentile_00.5 = min(daily_linear$total.km.5)
+Percentile_33.5 = quantile(daily_linear$total.km.5, 0.33333)
+Percentile_67.5 = quantile(daily_linear$total.km.5, 0.66667)
+Percentile_100.5 = max(daily_linear$total.km.5)
+
+Daily_bindA5 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA5)[[2]] = "Value"
+
+#day 7
+Percentile_00.6 = min(daily_linear$total.km.6)
+Percentile_33.6 = quantile(daily_linear$total.km.6, 0.33333)
+Percentile_67.6 = quantile(daily_linear$total.km.6, 0.66667)
+Percentile_100.6 = max(daily_linear$total.km.6)
+
+Daily_bindA6 = rbind(Percentile_00, Percentile_33, Percentile_67, Percentile_100)
+dimnames(Daily_bindA6)[[2]] = "Value"
+
+Percentiles.Daily <- cbind(Daily_bindA, Daily_bindA1, Daily_bindA2, Daily_bindA3, Daily_bindA4, Daily_bindA5, Daily_bindA6)
+colnames(Percentiles.Daily)<-c("total.km day 1","total.km day 2","total.km day 3","total.km day 4","total.km day 5","total.km day 6","total.km day 7")
+
+kable(t(Percentiles.Daily), digits = 0, format = "markdown", padding =2, format.args = list(big.mark =","))
+```
+
+
+# Injury to non-injury 
+Converting the injury variable to factor and Plotting the injuries.
+This shows us how unbalanced the dataset is.
+
+```{r}
+daily$injury <- as.factor(daily$injury)
+injuryplot<- ggplot(daily) + 
+  aes(x=injury)+geom_histogram(stat="count") +
+  stat_count(geom = "text",
+           color = "white",
+           aes(label = ..count..),
+           position= position_stack(vjust= 0.5))
+injuryplot
+```
+
+#Total km ran leading up to the next "event" or injury.
+Adding all total kilometers ran 7 days before possible injury event
+
+```{r}
+daily$total_km_to_inj <- daily$total.km + daily$total.km.1 + daily$total.km.2 + daily$total.km.3 + daily$total.km.4+ daily$total.km.5 + daily$total.km.6
+summary(daily$total_km_to_inj)
+```
+
+#Histogram of calculated total_km_to_inj
+Histogram of Total km 7 days before "event" to view distribution of total km Athletes ran 7 days leading to "injury" or no injury
+Note: There's more than 5000 rows in which athletes run a total of 0 km before possible injury.
+```{r}
+hist(daily$total_km_to_inj)
+```
+# Subjective subset
+Creating a subset with all subjective "perceived" data to look at the different distributions.  The subjective data consist of how the athletes felt pre- workout (perceived recovery), how exerted the athletes felt (perceived exertion), and how successful the athletes felt they did post-workout.  There is 7 days for each variable from Day 0 (day before "injury" or "no injury") to Day 6 (7 days before "injury" or "no injury" ).
+```{r}
+subjectivesubset <- daily %>% select(starts_with(c("perceived.")))
+```
+# Histograms of all subjective variables
+This shows that there was indications where:
+-athletes felt exerted after their workouts
+-athletes felt they did not fully recover from the previous day
+-athletes did not feel they were successful post-workout
+```{r}
+subjectivesubset %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram() +
+  stat_bin(binwidth = .20)
+```
+# Subset all variables of KM ran by athletes
+Subsetting all data of distance ran by athletes in km.  This subset consist of Total KM, Total distance sprinted, total distance in different heart rate zones; Z3-Z4, and Z5 in long and short track intervals (T1 and T2).  There is 7 days for each variable from Day 0 (day before "injury" or "no injury") to Day 6 (7 days before "injury" or "no injury" ).
+```{r}
+kmsubset <- daily %>% select(contains(c("km")))
+```
+# Histograms of all distance (km) data
+Once again, this shows how unbalance the data is.  For instance, for km.Z5.T1.T2, it looks as if no athletes ran during anaerobic max heart rate zone.  However, when simply calling the head() function, some km are visible aside from all zeros.  This also has to do with the athletes not running at max heart rate zone at ALL times.
+```{r}
+kmsubset %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram() +
+  stat_bin(binwidth = 10)
+```
+# Run head() function for km ran during heart rate zone 5 for Day 0 to ensure data exist besides 0
+```{r}
+head(kmsubset$km.Z5.T1.T2, 200)
+```
+# Strength and Alternative training
+Subsetting all Strength, and alternative training (hrs) performed by athletes.  There is 7 days for each variable from Day 0 (day before "injury" or "no injury") to Day 6 (7 days before "injury" or "no injury" ).
+```{r}
+strength_alt_subset <- daily %>% select(contains(c("strength", "alternative")))
+```
+# Histograms of all Strength and Alternative training
+This shows that athletes are also involved in other training activities aside from running
+```{r}
+strength_alt_subset %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram() +
+  stat_bin(binwidth = .50)
+```
+# Number of sessions
+Subsetting number of sessions the athletes performed for all days leading to "injury" or "no injury"
+```{r}
+nr_sessions_subset <- daily %>% select(contains(c("sessions")))
+```
+# Histograms of all number of sessions data for each day leading to "injury" or "no injury"
+```{r}
+nr_sessions_subset %>%
+  keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(value)) +
+  facet_wrap(~ key, scales = "free") +
+  geom_histogram() +
+  stat_bin(binwidth = .10)
+```
+
+# Breaks for km sprinting
+Out of curiosity, buckets are created to see how many km were logged in the day leading to "event"(possible injury)
+```{r}
+daily$sprintkm_0_disc <- cut(daily$km.sprinting, breaks = c(0.0, 0.3, 0.4, 0.5, 0.7, 0.9, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 10.5, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 40.0),
+                                    labels = c("0.0-0.29","0.3-0.39","0.4-0.49","0.5-0.69","0.7-0.89","0.9-0.99","1.0-1.19", "1.2-1.39","1.4-1.59","1.6-1.79","1.8-1.99","2.0-2.49","2.5-2.9","3.0-3.49","3.5-3.9","4.0-4.49","4.5-4.49",
+"5.0-5.49","5.5-5.49", "6.0-6.49", "6.5-6.99", "7.0-7.49", "7.5-7.99", "8.0-8.49", "9.0-9.49", "9.5-9.99", "10.0-10.49", "10.5-10.99", "11.0-11.99","12.0-12.99", "13.0-13.99","14.0-14.99","15.0-15.99","16.0-16.99","17.0-17.99","18.0-39.9", "40.0+"), right=FALSE)
+```
+
+View in table
+```{r}
+table(daily$sprintkm_0_disc)
+```
+
+# How Many days are in this dataset and when did most injuries take place?  
+In comparison to no injury events, most injury events occurred in the later years well into the experiment.
+
+```{r}
+summary(daily$Date)
+Date_inj<- ggplot(daily) + 
+  aes(x=injury, y=Date)+geom_boxplot(fill="purple", col="black")
+Date_inj
+```
+#Visualize Variables
+
+Create subsets of each day for further review
+
+```{r}
+day1 <- daily[, c(1:10, 71:73)]
+day2 <- daily[, c(11:20, 71:73)]
+day3 <- daily[, c(21:30, 71:73)]
+day4 <- daily[, c(31:40, 71:73)]
+day5 <- daily[, c(41:50, 71:73)]
+day6 <- daily[, c(51:60, 71:73)]
+day7 <- daily[, c(61:70, 71:73)]
+```
+
+Create subsets for each injured for the full dataset and the daily sets
+
+```{r}
+injuredDaily <- subset(daily, injury == "1")
+str(injuredDaily)
+
+injured_d1 <- subset(day1, injury == "1")
+injured_d2 <- subset(day2, injury == "1")
+injured_d3 <- subset(day3, injury == "1")
+injured_d4 <- subset(day4, injury == "1")
+injured_d5 <- subset(day5, injury == "1")
+injured_d6 <- subset(day6, injury == "1")
+injured_d7 <- subset(day7, injury == "1")
+```
+Remove Athlete ID and Date variable
+
+```{r}
+Aid <- as.character(daily[["Athlete.ID"]])
+daily$Athlete.ID <- NULL
+
+date <- as.character(daily[["Date"]])
+daily$Date <- NULL
+```
+
+#Association Rule Mining
+
+We will use the Apriori algorithm to generate association rules to help us understand which variables contribute to injury.
+
+```{r}
+dailyARM <- daily
+
+dailyARM<-lapply(dailyARM, function(x){as.factor(x)})
+dailyARM = as.data.frame(dailyARM)
+```
+
+
+```{r}
+dailytrans = as(dailyARM, "transactions")
+
+str(dailytrans)
+```
+
+Interesting Rules are not found when running the Apriori, even after utilizing discretized sprint km column. All rules point to the 0s in the data set. 
+```{r}
+
+rules <- apriori(dailytrans, parameter = list(supp=.80, conf = .50, minlen=3))
+rules <- sort(rules, decreasing = TRUE, by="lift")
+arules::inspect(rules[1:50])
+```
+
+Subset of rules with “injury” on right-hand side was created to see if there is interesting rules point to injuries and non-injuries. Unfortunately, similar results were formulated 
+```{r}
+rules_subset <- subset(rules, (rhs %oin% c("injury=1", "injury=0")))
+arules::inspect(rules_subset[1:10])
+```
+
+Even with lowering the support and confidence we found no rules indicating injury.
+```{r}
+#set rhs
+dailyrhs <- apriori(dailytrans, parameter = list(support=.01, confidence=.02, maxlen=3), appearance = list(rhs="injury=1"))
+rulesrhs <- sort(dailyrhs, decreasing = TRUE, by="lift")
+rulesrhs
+```
+
+
+Injured only
+
+```{r}
+#creating a subset to run ARM on only the injured
+injuredDailyARM <- injuredDaily
+injuredDailyARM<-lapply(injuredDailyARM, function(x){as.factor(x)})
+injuredDailyARM = as.data.frame(injuredDailyARM)
+```
+
+```{r}
+#turn data into transactions
+injureddailytrans = as(injuredDailyARM, "transactions")
+
+str(injureddailytrans)
+```
+
+
+```{r}
+injuredrules <- apriori(injureddailytrans, parameter = list(supp=.1, conf = .45, minlen=3))
+injuredrules <- sort(injuredrules, decreasing = TRUE, by="lift")
+arules::inspect(injuredrules[1:10])
+```
+
+```{r}
+#Subsetting to see the consequence (RHS) of certain training. Possible that number of sessions a day and sprinting had an impact.
+
+rules_injsubset <- subset(injuredrules, (rhs %oin% c("injury=1", "injury=0")))
+arules::inspect(rules_injsubset[1:10])
+```
+
+
+# Prepare data for predicitive models
+
+Make a copy of the dataset which we will work off of.
+```{r}
+dailyPM <- daily
+```
+
+Subset by KM variable types. We removed all of the non-kilometer variables so we could focus on time-on-feet data for certain models. This would also allow for faster processing time on the more time consuming models.
+```{r}
+
+dailyKM <- dailyPM[,c(2, 3,4,5,12,13,14,15,22,23,24,25,32,33,34,35,42,43,44,45,52,53,54,55,62,63,64,65,71)]
+
+```
+
+
+Set seed and randomize the full and clean daily dataset for reference use.
+```{r}
+set.seed(123)
+randomize <- runif(nrow(daily))
+dailyr<-daily[order(randomize), ]
+
+
+```
+
+Set seed and randomize for the kilometer subset created to run models.
+```{r}
+set.seed(123)
+randomize <- runif(nrow(dailyKM))
+dailyKMr<-dailyKM[order(randomize), ]
+```
+
+
+Create test and training set for full daily dataset.
+```{r}
+dailyr$injury <- as.factor(daily$injury)
+
+dailytrain <- dailyr[1:34213, ]
+dailytest <- dailyr[34214:42766, ]
+dailytraintarget <- dailyr[1:34213, 71]
+dailytesttarget <- dailyr[34214:42766, 71]
+
+
+```
+
+Create test and training set for kilometer only dataset.
+```{r}
+dailyKM$injury <- as.factor(dailyKM$injury)
+
+dailytrainKM <- dailyKMr[1:34213, ]
+dailytestKM <- dailyKMr[34214:42766, ]
+dailytraintargetKM <- dailyKMr[1:34213, 29]
+dailytesttargetKM <- dailyKMr[34214:42766, 29]
+
+range(dailytestKM$total.km)
+range(dailytestKM$km.sprinting)
+
+str(dailytesttargetKM)
+
+str(dailyKM)
+```
+
+Normalize
+This proved unsuccessful with the full daily dataset because of the wide range of variable type (hours, binary, Km)
+```{r}
+min_max_func <- function(x) {
+  a <- (x - min(x))
+  b <- (max(x) - min(x))
+  return(a/b)
+}
+
+
+dailytrain_n <- as.data.frame(lapply(dailytrain[,1:70], min_max_func))
+dailytrain_n
+
+dailytest_n <- as.data.frame(lapply(dailytest[,1:70], min_max_func))
+dailytest_n
+
+head(dailytrain)
+```
+
+Normalize the kilometer dataset.
+```{r}
+daily_normKM <- scale(dailyKM[,1:28])
+head(daily_normKM)
+
+```
+```{r}
+hist(daily_normKM)
+```
+
+#Decision Tree
+## Data prep
+```{r}
+
+set.seed(123)
+noinjuries <- daily %>% filter(injury == "0")
+injuries <- daily %>% filter(injury == "1")
+sample <- sample(nrow(noinjuries), 583, replace = FALSE)
+
+samplenoinjuries <- noinjuries[sample,]
+
+#new dataframe to use for training 
+dailysample <- rbind(samplenoinjuries, injuries)
+
+
+# Create the test and train dataset
+trainlist <- createDataPartition(y=dailysample$injury, p=.7, list=FALSE)
+train_daily <- dailysample[trainlist,]
+test_daily <- dailysample[-trainlist,]
+
+```
+
+# Decision Tree 1
+
+#Random Forest
+Resulted in 5 or fewer unique values. 
+
+
+#Naive Bayes
+
+The Naive Bayes model took some extra preparations and research before running. The cost was adjusted to 100 because of the results found in the association rule mining section.
+
+#Using Sigmoid kernel
+High accuracy but no injuries predicted.
+```{r}
+NB <- naiveBayes(injury~., data = dailytrain, kernel="sigmoid", cost=100, scale=TRUE)
+
+NB_pred <- predict(NB, dailytest, type = "class")
+
+plot(NB_pred, main = "NB Plot")
+
+##Confusion Matrix
+
+confusionMatrix(dailytesttarget, NB_pred)
+
+```
+
+#Using Sigmoid kernel for KM dataset
+Similar accuracy and but still poor performance with only 6 true positives. 
+```{r}
+NBkm <- naiveBayes(injury~., data = dailytrainKM, kernel="sigmoid", cost=100, scale=TRUE)
+
+NB_predkm <- predict(NBkm, dailytestKM, type = "class")
+
+plot(NB_predkm, main = "NB Plot KM")
+
+##Confusion Matrix
+confusionMatrix(dailytesttargetKM, NB_predkm)
+```
+
+#kNN
+
+Attempts to run K nearest neighbor on the daily and daily kilometer datasets were unsuccessful. 
+```{r}
+
+#Set k to the square root of dailytrain
+k = round(sqrt(nrow(dailytrain)))
+
+#Run model
+kNN_m1 <- knn(train = dailytrain, test = dailytest, cl=dailytraintarget, k=k)
+kNN_m1
+
+#confusion matrix
+confusionMatrix(dailytesttarget, kNN_m1)
+table(dailytesttarget, kNN_m1)
+
+
+```
+
+#kNN for KM
+
+```{r}
+#Set k to the square root of dailytrain
+k = round(sqrt(nrow(dailytrainKM)))
+
+#Run model
+kNN_KM <- knn(train = dailytrainKM, test = dailytestKM, cl=dailytraintargetKM, k=k)
+kNN_KM
+
+#confusion matrix
+confusionMatrix(dailytesttargetKM, kNN_KM)
+table(dailytesttargetKM, kNN_KM)
+
+#Another attempt using a different train set from the intial cleaning with. ALso added prob=TRUE
+kNN_modelKM <- knn(train = dailytrain_numonlyKM, test = dailytest_numonly, cl = dailytrain_labels, k=k, prob = TRUE)
+
+#confusion matrix
+confusionMatrix(dailytest_labels, kNN_model)
+```
+
+#SVM
+Preparing the daily dataset for SVM. Because the model takes longer to run, pulled out a balanced sample of injured and non-injured runners to expedite results. The first sample size is 818. 
+
+```{r}
+#Make a copy of the dataset to use for SVM
+dailysvm <- dailyKM
+dailysvm
+
+#set seed, seperate injured and non-injured, sample and create a new, smaller, dataset.
+set.seed(123)
+noinjuries <- dailysvm %>% filter(injury == "0")
+injuries <- dailysvm %>% filter(injury == "1")
+sample <- sample(nrow(noinjuries), 583, replace = FALSE)
+
+samplenoinjuries <- noinjuries[sample,]
+
+#new dataframe to use for training 
+dailysamplesvm <- rbind(samplenoinjuries, injuries)
+
+#scale the data
+
+dailysamplesvm %>%
+   mutate_at(c(1:28), funs(c(scale(.))))
+
+# Create the test and train dataset from the sample set
+trainlist <- createDataPartition(y=dailysamplesvm$injury, p=.7, list=FALSE)
+train_daily <- dailysamplesvm[trainlist,]
+test_daily <- dailysamplesvm[-trainlist,]
+
+testlabels <- test_daily$injury
+test_daily <- test_daily %>% select(-injury)
+
+```
+
+
+Run with all types of kernels
+```{r}
+SVM <- svm(injury~., data = train_daily, kernel="polynomial", cost=100, scale=TRUE)
+print(SVM)
+#Run prediction with the polynomial kernel
+SVM_Pred <- predict(SVM, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred)
+```
+
+
+```{r}
+SVM2 <- svm(injury~., data = train_daily, kernel="sigmoid", cost=100, scale=TRUE)
+print(SVM2)
+#Run prediction with the sigmoid kernel
+SVM_Pred2 <- predict(SVM2, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred2)
+```
+
+
+```{r}
+svm3 <-svm(injury~., data = train_daily, kernel = "linear", cost=100, scale=TRUE)
+print(svm3)
+#Run prediction with the linear kernel
+SVM_Pred3 <- predict(svm3, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred3)
+```
+
+Run with different costs
+```{r}
+SVM <- svm(injury~., data = train_daily, kernel="polynomial", cost=500, scale=TRUE)
+print(SVM)
+#Run prediction with the polynomial kernel
+SVM_Pred <- predict(SVM, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred)
+```
+
+
+```{r}
+SVM2 <- svm(injury~., data = train_daily, kernel="sigmoid", cost=500, scale=TRUE)
+print(SVM2)
+#Run prediction with the sigmoid kernel
+SVM_Pred2 <- predict(SVM2, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred2)
+```
+
+
+```{r}
+svm3 <-svm(injury~., data = train_daily, kernel = "linear", cost=500, scale=TRUE)
+print(svm3)
+#Run prediction with the linear kernel
+SVM_Pred3 <- predict(svm3, test_daily, type="class")
+#Confusion matrix
+confusionMatrix(testlabels, SVM_Pred3)
+
+#SVM Increasing the sample size
+```
+
+Increase the sample size in attempt to get a higher accuracy. Doubled the count to 2000.
+```{r}
+dailysvm2 <- dailyKM
+dailysvm2
+
+set.seed(123)
+noinjuries2 <- dailysvm2 %>% filter(injury == "0")
+injuries2 <- dailysvm2 %>% filter(injury == "1")
+sample2 <- sample(nrow(noinjuries), 2000, replace = FALSE)
+
+samplenoinjuries2 <- noinjuries2[sample2,]
+
+#new dataframe to use for training 
+dailysamplesvm2 <- rbind(samplenoinjuries2, injuries2)
+
+#scale the data
+
+dailysamplesvm2 %>%
+   mutate_at(c(1:28), funs(c(scale(.))))
+
+# Create the test and train dataset
+trainlist2 <- createDataPartition(y=dailysamplesvm2$injury, p=.8, list=FALSE)
+train_daily2 <- dailysamplesvm2[trainlist2,]
+test_daily2 <- dailysamplesvm2[-trainlist2,]
+
+testlabels2 <- test_daily2$injury
+test_daily2 <- test_daily2 %>% select(-injury)
+```
+
+
+
+#SVM for increased sample
+
+```{r}
+SVMls <- svm(injury~., data = train_daily2, kernel="linear", cost=100, scale=TRUE)
+print(SVMls)
+#Predication for linear kernel
+SVM_Predls <- predict(SVMls, test_daily2, type="class")
+#Confusion matrix
+confusionMatrix(testlabels2, SVM_Predls)
+```
+
+
+```{r}
+SVMls2 <- svm(injury~., data = train_daily2, kernel="sigmoid", cost=100, scale=TRUE)
+print(SVMls2)
+#Predication for sigmoid kernel
+SVM_Predls2 <- predict(SVMls2, test_daily2, type="class")
+#Confusion matrix
+confusionMatrix(testlabels2, SVM_Predls2)
+```
+
+
+```{r}
+SVMls3 <- svm(injury~., data = train_daily2, kernel="polynomial", cost=100, scale=TRUE)
+print(SVMls3)
+#Predication for polynomial kernel
+SVM_Predls3 <- predict(SVMls3, test_daily2, type="class")
+#Confusion matrix
+confusionMatrix(testlabels2, SVM_Predls3)
+```
+
+
+#Results
+
+##ARM
+
+##Decision Tree
+
+##Random Forest
+
+Attempts to run Random Forest resulted in a message that their were 5 of fewer unique values. This message was not surprising given the high level tuning needed to create a decision tree. The model was not able to make any notable classification.
+
+##Naive Bayes
+Daily: The model for the daily dataset resulted in 93% accuracy but did not predict any injuries. Attempted to add and edit parameters did not yield better results.
+
+Daily Kilometer Only: The model resulted in 95% accuracy and was tuned to predict 6 true positives, but 296 false positives.
+
+
+##kNN
+Troubleshooting was conducted for the error message "too many ties in knn" with no answer found. 
+
+##SVM
+
+###Daily Sample Set
+Sample size of 818.
+
+Polynomial with cost=100: The accuracy of this model was 57.4%, with a balanced, but still high rate of false positives(67) and false negatives(81). There is room for improvement.
+
+Sigmoid with cost=100: The accuracy of this model was 56.9%, with a also balanced, but still high rate of false positives(72) and false negatives(78). There is room for improvement. The most successful model.
+
+Linear with cost=100: The accuracy of this model was 69%, which was a great improvement, but still high rate of false positives(54) and false negatives(84). The model leaned more heavily to assigning a false negative or telling someone they were not injured when they were. This was surprising because the assumption was linear would return the best accuracy with the binary inquiry. There is room for improvement.
+
+###Increasing the cost
+Polynomial with cost=500: The accuracy of this model was 58%, with a pretty balanced, but still high rate of false positives(70) and false negatives(76). There is room for improvement.
+
+Sigmoid with cost=500: The accuracy of this model was 56%, with a pretty balanced, but still high rate of false positives(75) and false negatives(77). There is room for improvement, but this is still the most accurate and balanced result.
+
+Linear with cost=500: The accuracy of this model was 60%, with an unbalanced, high rate of false positives(56) and false negatives(83). There is room for improvement.
+
+###Daily Kilometer Sample Set
+
+Increased the sample set to 2000 in hopes of getting some more accuracy in the orignal models.
+
+Increased Sample Set: Resulted in double or triple the amount of support vectors than the initial daily dataset model, so this was not explored further. 
+
+#Conclusion
+
+##Further Analysis 
+
+Further analysis based on the initial cleaning and deep dive on the dataset would be beneficial. More data leads to better results, but it is also difficult to wrangle and balance in this area of study. Runners train in some form almost everyday of the week, and sometimes more that once a day, so there are more instances of sessions than injuries. Looking to smaller samples of high risk to injury athletes, the weeks leading to an injury, and the terrain the runner was training on would be useful in predicting injury.
+
+Models of interest from our report include decision tree and support vector machines. Because the result data was binary a neural network, logistic regression, and a successful kNN would have been given important insights.  
+
+The sigmoid kernel of support vector machines gave the most accurate result of all the predicative models attempted. The accuracy was not particularly high, but there was a balance in the rate of false positive and negative results that hint that further tuning could make this a strong predictive model for injuries.
+
+##Business decisions
+
+GPS data from a runners watch could greatly impact injury prevention. Garmin and other watch brands can runners watch can tell a runner they are over reaching or over training which may result in injury. The companies that continue to develop this technology could benefit from adding feature to their watches or compatible apps to have runners track more data. Did they complete this run on a cushion track? Or on the road of a city? What shoes or insoles are they wearing and how old are they?
+
+Businesses can also turn their attention to the variables and attributes that have the most important weight and information. If the target is time on feet the focus should the be kilometers run. The length of the workout in hours and minutes could provide more insight to this overuse study. Perceived training data also had a weight in models, like the decision tree. If a runner feels they are not training successfully they will over reach in most cases, especially in competitive running. Over reaching in training will lead to over training and possible strains and injuries. This could be a more physiological study competitive running or sports psychology could undertake.
+
+#References
+1 McCallun, K. (June 13, 2022), The 6 Most Common Running Injuries & How to Prevent Them. https://www.houstonmethodist.org/blog/articles/2022/jun/the-6-most-common-running-injuries-how-to-prevent-them/#:~:text=The%20most%20common%20running%20injuries,hip)%2C%20typically%20felt%20when%20active 
+2 https://irwinsmegastore.ie/blogs/news/history-of-activity-trackers-from-pedometers-to-fitbit-infographic 
