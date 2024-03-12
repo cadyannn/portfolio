@@ -1,13 +1,16 @@
 # IST 659: Database Administration
 ## Caitlin Rookey
-## ID #
+## ID #333629736
 
 crookey@syr.edu
+
 caitlinrookey@gmail.com
 
 ## Description
 
 Tech4All database description...
+
+## Required Tools
 
 * SQL Server Integration Services
 * SQL Server Management Studio
@@ -20,7 +23,7 @@ Tech4All database description...
 2. [Data](link)
     - All data used in this project
 
-3. [Scripts](link)
+3. [final project with inserts.sql](link)
     - Scripts used to conduct analysis
 
 4. [filename](link)
