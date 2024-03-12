@@ -18,7 +18,7 @@ In 2012, Yahoo Voice, along with many large tech companies, was hacked by "The D
     - Overview Document detailing repository contents
 
 4. [Group 4_Yahoo_FinalPres.pptx](https://github.com/cadyannn/portfolio/blob/main/IST%20623/Case%20Studies%20Description.pptx)
-    - Project report
+    - Project presentation
   
-5. [Case Studies_Description.pptx](link)
+5. [Case Studies_Description.pptx](https://github.com/cadyannn/portfolio/blob/main/IST%20623/Case%20Studies%20Description.pptx)
     - Project description and guidelines
