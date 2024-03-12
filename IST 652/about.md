@@ -22,7 +22,7 @@ AirBnB project description...
 3. [Scripts](link)
     - Scripts used to conduct analysis
 
-4. [filename](link)
+4. [Rookey_IST659_FinalProject.ipynb](https://github.com/cadyannn/portfolio/blob/main/IST%20652/Rookey_IST652_FinalProject.ipynb)
     - Project report
   
 5. [Project_Description.pdf](link)
