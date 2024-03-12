@@ -15,7 +15,7 @@ In 2012, Yahoo Voice, along with many large tech companies, was hacked by "The D
 
 ## Table of Contents
 
-1. README.md 
+1. about.md 
     - Overview Document detailing repository contents
 
 4. [Group 4_Yahoo_FinalPres.pptx](https://github.com/cadyannn/portfolio/blob/main/IST%20623/Case%20Studies%20Description.pptx)
