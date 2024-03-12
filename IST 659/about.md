@@ -8,7 +8,14 @@ caitlinrookey@gmail.com
 
 ## Description
 
-Tech4All database description...
+The foundation, TechForAll, solicits technology donations for students across the city. The devices are distributed by criteria determined by the foundation’s board of directors. The CompU database tracks the requests made by students to receive a device from the charity and the inventory of devices waiting to be distributed. We used our database to answer the following questions:
+
+1. How can we notify a donor once their donated laptops have been given to a student?​
+2. How many students from each district have requested devices? ​
+3. Who are our top donors?​
+4. How many students from each district have been approved for device allocation?​
+5. How many laptops and tablets are currently available in the inventory?​
+6. How will students be measured against GPA, disability, grade, and district, etc.?​
 
 ## Required Tools
 
@@ -29,5 +36,4 @@ Tech4All database description...
 4. [FinalPresentation_Team2.pptx](https://github.com/cadyannn/portfolio/blob/main/IST%20659/FinalPresentation_Team2.pptx)
     - Project presentation
   
-5. [Project_Description.pdf](link)
-    - Project description and guidelines
+
