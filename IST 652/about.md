@@ -1,6 +1,6 @@
 # IST 652: Scripting for Data Analysis
 ## Caitlin Rookey
-## ID #
+## ID #333629736
 
 crookey@syr.edu
 caitlinrookey@gmail.com
@@ -18,9 +18,10 @@ Analysis of various Airbnb properties from a dataset publicly available on Kaggl
 1. README.md 
     - Overview Document detailing repository contents
 
-2. [Data](link)
+2. [New York City Airbnb Open Data](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)
+ [New York City Crime Open Data]((https://opendata.cityofnewyork.us/)
     - All data used in this project
 
-3. [Rookey_IST659_FinalProject.ipynb](https://github.com/cadyannn/portfolio/blob/main/IST%20652/Rookey_IST652_FinalProject.ipynb)
+4. [Rookey_IST659_FinalProject.ipynb](https://github.com/cadyannn/portfolio/blob/main/IST%20652/Rookey_IST652_FinalProject.ipynb)
     - Project report
 
