@@ -7,8 +7,9 @@ caitlinrookey@gmail.com
 
 ## Description
 
-AirBnB project description...
+In 2012, Yahoo Voice, along with many large tech companies, was hacked by "The D33Ds Company." More than 450,000 username and passwords were stolen from Yahoo Voice and posted online. Experts found that none of the passwords were encrypted. They appear to have been stolen using a SQL injection. While the other large tech companies tightened down on security measures, Yahoo did not. This has resulted in multiple security breaches and billions of compromised user accounts. This case study describes the multiple breaches and aftermath.
 
+## Required Tools
 * Microsoft PowerPoint
 
 ## Table of Contents
@@ -16,8 +17,8 @@ AirBnB project description...
 1. README.md 
     - Overview Document detailing repository contents
 
-4. [filename](link)
+4. [Group 4_Yahoo_FinalPres.pptx](link)
     - Project report
   
-5. [Project_Description.pdf](link)
+5. [Case Studies_Description.pptx](link)
     - Project description and guidelines
