@@ -24,7 +24,7 @@ The foundation, TechForAll, solicits technology donations for students across th
 
 ## Table of Contents
 
-1. README.md 
+1. about.md 
     - Overview Document detailing repository contents
 
 2. [FinalProject_Team2.docx](https://github.com/cadyannn/portfolio/blob/main/IST%20659/FinalProject_Team2.docx)
