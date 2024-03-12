@@ -16,7 +16,7 @@ Analysis of various Airbnb properties from a dataset publicly available on Kaggl
 
 ## Table of Contents
 
-1. README.md 
+1. about.md 
     - Overview Document detailing repository contents
 
 2. [New York City Airbnb Open Data](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)
