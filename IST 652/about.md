@@ -19,7 +19,7 @@ Analysis of various Airbnb properties from a dataset publicly available on Kaggl
     - Overview Document detailing repository contents
 
 2. [New York City Airbnb Open Data](https://www.kaggle.com/datasets/dgomonov/new-york-city-airbnb-open-data)
- [New York City Crime Open Data]((https://opendata.cityofnewyork.us/)
+3. [New York City Crime Open Data](https://opendata.cityofnewyork.us/)
     - All data used in this project
 
 4. [Rookey_IST659_FinalProject.ipynb](https://github.com/cadyannn/portfolio/blob/main/IST%20652/Rookey_IST652_FinalProject.ipynb)
