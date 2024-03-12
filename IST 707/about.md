@@ -16,7 +16,7 @@ Our final project attempted to use Garmin running data to predict injuries in pr
 
 # Table of Contents
 
-1. README.md 
+1. about.md 
     - Overview Document detailing repository contents
 
 2. [Final Datasets](https://github.com/cadyannn/portfolio/tree/main/IST%20707/Final%20Datasets)
