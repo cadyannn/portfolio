@@ -20,6 +20,6 @@ The Applied Data Science program at Syracuse University's School of Information 
 3. [IST 659: Database Administration](https://github.com/cadyannn/portfolio/tree/main/IST%20659)
 4. [IST 707: Applied Machine Learning](https://github.com/cadyannn/portfolio/tree/main/IST%20707)
 5. [CaitlinRookeyCV.dox](https://github.com/cadyannn/portfolio/blob/main/CaitlinRookeyCV.docx)
-6. Portfolio Milestone Report
-7. [Presentation Video] (https://youtu.be/857mstYKlYY)
-8. Presentation Slides
+6. [Portfolio Milestone Report](https://github.com/cadyannn/portfolio/blob/main/Caitlin_Rookey_ADSPortfolio.docx)
+7. [Presentation Video](https://youtu.be/857mstYKlYY)
+8. [Presentation Slides](https://github.com/cadyannn/portfolio/blob/main/Rookey_ADS_Portfolio.pptx)
