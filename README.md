@@ -21,5 +21,5 @@ The Applied Data Science program at Syracuse University's School of Information 
 4. [IST 707: Applied Machine Learning](https://github.com/cadyannn/portfolio/tree/main/IST%20707)
 5. [CaitlinRookeyCV.dox](https://github.com/cadyannn/portfolio/blob/main/CaitlinRookeyCV.docx)
 6. Portfolio Milestone Report
-7. Presentation Video
+7. [Presentation Video] (https://youtu.be/857mstYKlYY)
 8. Presentation Slides
